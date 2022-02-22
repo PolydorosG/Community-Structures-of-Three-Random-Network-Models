@@ -1,16 +1,24 @@
 include("julia-community.jl")
 
-using DataFrames, Graphs
+using DataFrames, Graphs, Plots, Base
 
 import .JuliaCommunity as juliac
 
+function swaprow!(x,i,j)
+    for k in axes(x,1) # edited according to next answer
+      idata = x[i,k]
+      x[i,k] = x[j,k]
+      x[j,k] = idata
+    end
+end
+
 
 #n are the number of vertices 
-n = 100 
+n = 1000
 #k is each vertex exepected degree 
-k = 2
+k = 50
 #b is the probability two vertex to be conected 
-b = 0.5
+b = 0.3
 
 g = watts_strogatz(n, k, b)
 
@@ -38,6 +46,7 @@ println(from)
 println(to)
 println(importance)
 println(weight)
+display(spy(adj_g))
 
 nodes = DataFrame(id = id, 
                label = id, 
@@ -56,7 +65,7 @@ jc = juliac.JuliaCommunityInstance(network, nodes = nodes, node_label_field = "l
                                    node_weighted = true, to_summarise_graph = false, task_series = "leiden")
 
 #plot the entire network/graph
-juliac.plot_network(jc , line_type="straight", node_size_smoother = 0.8, edge_width_smoother = 1.2)
+# juliac.plot_network(jc ,n, line_type="straight", node_size_smoother = 0.8, edge_width_smoother = 1.2)
 
 jc.γ = 0.1
 
@@ -64,7 +73,19 @@ juliac.discover_communities(jc)
 
 println(jc.communities)
 println(jc.memberships)
+sort!(jc.memberships,[:c])
+println(jc.memberships)
+A = Matrix(adj_g)
+# println(A)
 
-for i in 1:jc.n_community
-    juliac.plot_community(jc, i, line_type="straight")
+for i in 1:n
+    swaprow!(A,jc.memberships.id[i],i)
 end
+# println(A)
+# A = sparse(A,n,n)
+# display(spy(A))
+
+
+# for i in 1:jc.n_community
+#     juliac.plot_community(jc, i, line_type="straight")
+# end
