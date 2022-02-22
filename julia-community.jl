@@ -103,6 +103,7 @@ function JuliaCommunityInstance(network::DataFrame;
         method::String="CPM", 
         to_summarise_graph::Bool=true,
         task_series::String="",)
+        
     filter!(row -> row.from > 0 && row.to > 0, network)    
     jc = JuliaCommunityInstance()
     jc.task_series = replace("_" * replace(task_series, "-" => "_"), "__" => "_")
@@ -121,11 +122,11 @@ function JuliaCommunityInstance(network::DataFrame;
     
     if edge_weighted
         filter!(row -> row.weight > 0, jc.network) 
-    #= ============================================
-    else if !is_directed
+
+    elseif !is_directed
         jc.network = vcat(jc.network, jc.network)
         unique(jc.network)
-    ============================================ =#
+
     end
 
     print("\n\tBuilding the graph from the network...")
