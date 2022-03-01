@@ -66,82 +66,90 @@ end
 
 n = 1000# number of vertices
 
-# # Uncomment to produce Erdos Renyi matrices 
-# for p in 0.001:0.003:0.09
-#     local k = 5   # vertex exepected degree 
-#     local adj_g , from , to , id = erdos_graph(n , p)
+# Uncomment to produce Erdos Renyi matrices 
+for p in 0.001:0.003:0.09
+    local k = 5   # vertex exepected degree 
+    local adj_g , from , to , id = erdos_graph(n , p)
 
 
-#     local nodes = DataFrame(id = id, label = id, importance = ones(Int64,n))
-#     local network = DataFrame(from = from, to = to, weight = ones(Int64,size(from)))
+    local nodes = DataFrame(id = id, label = id, importance = ones(Int64,n))
+    local network = DataFrame(from = from, to = to, weight = ones(Int64,size(from)))
 
 
-#     local jc = juliac.JuliaCommunityInstance(network, nodes = nodes, node_label_field = "label", 
-#                                     node_weighted = true, is_directed = false,
-#                                     to_summarise_graph = false, task_series = "leiden")
+    local jc = juliac.JuliaCommunityInstance(network, nodes = nodes, node_label_field = "label", 
+                                    node_weighted = true, is_directed = false,
+                                    to_summarise_graph = false, task_series = "leiden")
 
-#     #plot the entire network/graph
-#     #juliac.plot_network(jc , line_type="straight", node_size_smoother = 0.8, edge_width_smoother = 1.2)
+    #plot the entire network/graph
+    #juliac.plot_network(jc , line_type="straight", node_size_smoother = 0.8, edge_width_smoother = 1.2)
 
-#     jc.γ = 0.1
+    jc.γ = 0.1
 
-#     juliac.discover_communities(jc)
-#     println(p)
+    juliac.discover_communities(jc)
+    println(p)
 
-#     local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
-#     local coms = coms[sortperm(coms[:, 2]), :]; # sorted by communities
+    local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
 
-#     # use a sparse permutation matrix to move collumns and rows of adj matrix
-#     local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
-#     local adj_a = perm*adj_g*perm'
+    # add the unconnected nodes Leiden sometimes discards when they are at the end of the graph
+    max = maximum(jc.memberships.c)+1
+    more_ids = collect( (length(coms[:,1])+1):n)
+    more_c = collect(max:(max+(n-1-(length(coms[:,1])))))
+    coms = [coms; more_ids more_c]
 
-#     println("Displaying")
-#     display(spy(adj_a, plot_title = "p = " * string(p)))
-#       
-#     p = histogram(jc.communities.size,color ="grey",bins=100)
-#      display(p)
-#
-# end
+    # sort by communities
+    coms = coms[sortperm(coms[:, 2]), :];
+
+    # use a sparse permutation matrix to move collumns and rows of adj matrix
+    local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
+    local adj_a = perm*adj_g*perm'
+
+    println("Displaying")
+    display(spy(adj_a, plot_title = "p = " * string(p)))
+      
+    p = histogram(jc.communities.size,color ="grey",bins=100)
+    display(p)
+
+end
 
 
 
 # Uncomment to produce Watts Strogatz matrices
-# for k in [10, 40]
-#     for b in [0.05, 0.8]
+for k in [10, 40]
+    for b in [0.05, 0.8]
         
-#         local adj_g , from , to , id = watts_strogatz_graph(n, k, b)
+        local adj_g , from , to , id = watts_strogatz_graph(n, k, b)
 
-#         local nodes = DataFrame(id = id, label = id, importance = ones(Int64,n))
-#         local network = DataFrame(from = from, to = to, weight = ones(Int64,size(from)))
+        local nodes = DataFrame(id = id, label = id, importance = ones(Int64,n))
+        local network = DataFrame(from = from, to = to, weight = ones(Int64,size(from)))
 
 
-#         local jc = juliac.JuliaCommunityInstance(network, nodes = nodes, node_label_field = "label", 
-#                                         node_weighted = true, is_directed = false,
-#                                         to_summarise_graph = false, task_series = "leiden")
+        local jc = juliac.JuliaCommunityInstance(network, nodes = nodes, node_label_field = "label", 
+                                        node_weighted = true, is_directed = false,
+                                        to_summarise_graph = false, task_series = "leiden")
 
-#         #plot the entire network/graph
-#         #juliac.plot_network(jc , line_type="straight", node_size_smoother = 0.8, edge_width_smoother = 1.2)
+        #plot the entire network/graph
+        #juliac.plot_network(jc , line_type="straight", node_size_smoother = 0.8, edge_width_smoother = 1.2)
 
-#         jc.γ = 0.1
+        jc.γ = 0.1
 
-#         juliac.discover_communities(jc)
-#         println(b)
+        juliac.discover_communities(jc)
+        println(b)
 
-#         local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
-#         local coms = coms[sortperm(coms[:, 2]), :]; # sorted by communities
+        local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
+        local coms = coms[sortperm(coms[:, 2]), :]; # sorted by communities
 
-#         # use a sparse permutation matrix to move collumns and rows of adj matrix
-#         local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
-#         local adj_a = perm*adj_g*perm'
+        # use a sparse permutation matrix to move collumns and rows of adj matrix
+        local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
+        local adj_a = perm*adj_g*perm'
 
-#         println("Displaying")
-#         display(spy(A, plot_title = "k = " * string(k) * ", b = " * string(b) ))
-#         
-#         p = histogram(jc.communities.size,color ="grey",bins=100)
-#         display(p)
-#
-#     end
-# end
+        println("Displaying")
+        display(spy(adj_a, plot_title = "k = " * string(k) * ", b = " * string(b) ))
+        
+        p = histogram(jc.communities.size,color ="grey",bins=100)
+        display(p)
+
+    end
+end
 
 
 
