@@ -91,10 +91,12 @@ n = 1000# number of vertices
 #     local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
 #     local coms = coms[sortperm(coms[:, 2]), :]; # sorted by communities
 
-#     local A = Matrix(adj_g)
+#     # use a sparse permutation matrix to move collumns and rows of adj matrix
+#     local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
+#     local adj_a = perm*adj_g*perm'
 
-#     A = A[coms[:,1], coms[:,1]]
-#     display(spy(A, plot_title="p = " * string(p)))
+#     println("Displaying")
+#     display(spy(adj_a, plot_title = "p = " * string(p)))
 # end
 
 
@@ -122,13 +124,13 @@ n = 1000# number of vertices
 #         println(b)
 
 #         local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
-        
-#         # sort vertices by their community
-#         coms = coms[sortperm(coms[:, 2]), :]; 
+#         local coms = coms[sortperm(coms[:, 2]), :]; # sorted by communities
 
-#         local A = Matrix(adj_g)
+#         # use a sparse permutation matrix to move collumns and rows of adj matrix
+#         local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
+#         local adj_a = perm*adj_g*perm'
 
-#         A = A[coms[:,1], coms[:,1]]
+#         println("Displaying")
 #         display(spy(A, plot_title = "k = " * string(k) * ", b = " * string(b) ))
 #     end
 # end
@@ -158,7 +160,6 @@ for k in [2]
 
     local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
     local coms = coms[sortperm(coms[:, 2]), :]; # sorted by communities
-
 
     # use a sparse permutation matrix to move collumns and rows of adj matrix
     local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
