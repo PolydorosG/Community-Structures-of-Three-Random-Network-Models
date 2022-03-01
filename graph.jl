@@ -97,6 +97,10 @@ n = 1000# number of vertices
 
 #     println("Displaying")
 #     display(spy(adj_a, plot_title = "p = " * string(p)))
+#       
+#     p = histogram(jc.communities.size,color ="grey",bins=100)
+#      display(p)
+#
 # end
 
 
@@ -132,13 +136,17 @@ n = 1000# number of vertices
 
 #         println("Displaying")
 #         display(spy(A, plot_title = "k = " * string(k) * ", b = " * string(b) ))
+#         
+#         p = histogram(jc.communities.size,color ="grey",bins=100)
+#         display(p)
+#
 #     end
 # end
 
 
 
 # Uncomment to produce Barabasi Albert matrices
-for k in [2]
+for k in [2 8 16 36]
     local adj_g , from , to , id = barabasi_graph(n , k)
 
 
@@ -171,8 +179,7 @@ for k in [2]
     # in the Plots library.
     println("Displaying")
     display(spy(adj_a, plot_title = "k = " * string(k)))
+    p = histogram(jc.communities.size,color ="grey",bins=100)
+    display(p)
     
 end
-
-
-
