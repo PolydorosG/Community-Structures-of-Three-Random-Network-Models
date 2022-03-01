@@ -1,4 +1,4 @@
-using Graphs, GraphPlot, Plots, Colors, DataFrames 
+using Graphs, GraphPlot, Colors, DataFrames, SparseArrays, Plots
 include("julia-community.jl")
 import .JuliaCommunity as juliac
 
@@ -64,7 +64,7 @@ end
 
 
 
-n = 1000 # number of vertices
+n = 1000# number of vertices
 
 # # Uncomment to produce Erdos Renyi matrices 
 # for p in 0.001:0.003:0.09
@@ -136,7 +136,7 @@ n = 1000 # number of vertices
 
 
 # Uncomment to produce Barabasi Albert matrices
-for k in [2,8,16,36]
+for k in [2]
     local adj_g , from , to , id = barabasi_graph(n , k)
 
 
@@ -159,10 +159,18 @@ for k in [2,8,16,36]
     local coms = [hcat(jc.memberships.id)  hcat(jc.memberships.c)]
     local coms = coms[sortperm(coms[:, 2]), :]; # sorted by communities
 
-    local A = Matrix(adj_g)
 
-    A = A[coms[:,1], coms[:,1]]
-    display(spy(A, plot_title = "k = " * string(k)))
+    # use a sparse permutation matrix to move collumns and rows of adj matrix
+    local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
+    local adj_a = perm*adj_g*perm'
+
+    # Note : Our algorithm is quite fast in sorting the matrix by community
+    # however running the code for n>10000 will cause the programm to hang 
+    # right after printing 'Displaying' due to the implementation of spy 
+    # in the Plots library.
+    println("Displaying")
+    display(spy(adj_a, plot_title = "k = " * string(k)))
+    
 end
 
 
