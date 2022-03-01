@@ -1,37 +1,5 @@
 # Parallel-and-Distributed-Systems-4
 Community Structures in Random Graph Models
-\documentclass[letterpaper,12pt]{article}
-\usepackage[top=1in,bottom=1in, left=1in, right=1in]{geometry}
-\usepackage{fancyhdr}
-\usepackage{amsmath}
-\usepackage{amsfonts,amssymb,amsthm,cite,float,graphicx}
-\usepackage[usenames]{color}
-\usepackage{hyperref}
-
-
-\pagestyle{fancy}
-
-\setlength{\headheight}{15.2pt}
-\rhead{}
-
-\lhead{Community Structures of Three Random Network Models}
-
-\begin{center}
-    \section*{Parallel and Distributed Systems - Assignment 4}
-\end{center}
-
-\head{\phantom{author-name} }
-\newline
-\head{Authors:}
-\newline
-\head{Giannouris Polydoros AEM: 9746}
-\newline
-\head{Grigorakis Efthymios AEM: 9694}
-\newline
-
-
-\begin{document} 
-
 
 \section{Introduction}
 \item
