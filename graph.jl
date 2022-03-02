@@ -68,7 +68,6 @@ n = 1000# number of vertices
 
 # Uncomment to produce Erdos Renyi matrices 
 for p in 0.001:0.003:0.09
-    local k = 5   # vertex exepected degree 
     local adj_g , from , to , id = erdos_graph(n , p)
 
 
@@ -103,6 +102,10 @@ for p in 0.001:0.003:0.09
     local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
     local adj_a = perm*adj_g*perm'
 
+    # Note : Our algorithm is quite fast in sorting the matrix by community
+    # however running the code for n>10000 will cause the programm to hang 
+    # right after printing 'Displaying' due to the implementation of spy 
+    # in the Julia Plots library.
     println("Displaying")
     display(spy(adj_a, plot_title = "p = " * string(p)))
       
@@ -157,7 +160,6 @@ end
 for k in [2 8 16 36]
     local adj_g , from , to , id = barabasi_graph(n , k)
 
-
     local nodes = DataFrame(id = id, label = id, importance = ones(Int64,n))
     local network = DataFrame(from = from, to = to, weight = ones(Int64,size(from)))
 
@@ -181,10 +183,6 @@ for k in [2 8 16 36]
     local perm = sparse(1:n, coms[:,1],ones(Int64,n) )
     local adj_a = perm*adj_g*perm'
 
-    # Note : Our algorithm is quite fast in sorting the matrix by community
-    # however running the code for n>10000 will cause the programm to hang 
-    # right after printing 'Displaying' due to the implementation of spy 
-    # in the Plots library.
     println("Displaying")
     display(spy(adj_a, plot_title = "k = " * string(k)))
     p = histogram(jc.communities.size,color ="grey",bins=100)
